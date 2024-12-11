@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Livewire;
+
 use Livewire\Component;
 use App\Models\Book;
 
@@ -9,18 +10,22 @@ class Books extends Component
     public $books, $title, $author, $quantity, $book_id;
 
     public function render()
-{
-    $this->books = Book::all();
-    if ($this->books->isEmpty()) {
-        // Return a default value if no books are found
-        $this->books = collect();
+    {
+        $this->books = Book::all();
+        return view('livewire.books')->layout('layouts.app');
     }
-    return view('livewire.books')->layout('layouts.app');
-}
-
 
     public function create()
     {
+        // Uncomment to debug
+        // dd($this->title, $this->author, $this->quantity);
+
+        $this->validate([
+            'title' => 'required|string|max:50',
+            'author' => 'required|string|max:50',
+            'quantity' => 'required|integer|min:1',
+        ]);
+
         Book::create([
             'title' => $this->title,
             'author' => $this->author,
@@ -33,7 +38,7 @@ class Books extends Component
 
     public function edit($id)
     {
-        $book = Book::find($id);
+        $book = Book::findOrFail($id);
         $this->book_id = $book->id;
         $this->title = $book->title;
         $this->author = $book->author;
@@ -42,7 +47,13 @@ class Books extends Component
 
     public function update()
     {
-        $book = Book::find($this->book_id);
+        $this->validate([
+            'title' => 'required|string|max:50',
+            'author' => 'required|string|max:50',
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        $book = Book::findOrFail($this->book_id);
         $book->update([
             'title' => $this->title,
             'author' => $this->author,
@@ -55,7 +66,9 @@ class Books extends Component
 
     public function delete($id)
     {
-        Book::find($id)->delete();
+        $book = Book::findOrFail($id);
+        $book->delete();
+
         session()->flash('message', 'Book deleted successfully.');
     }
 
@@ -67,4 +80,3 @@ class Books extends Component
         $this->book_id = null;
     }
 }
-

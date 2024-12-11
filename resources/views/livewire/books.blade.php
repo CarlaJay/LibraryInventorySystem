@@ -1,17 +1,16 @@
 @extends('layouts.app')
 
 @section('content')
-    <div>
+    <div class="container">
         @if (session()->has('message'))
             <div class="alert alert-success">
                 {{ session('message') }}
             </div>
         @endif
-
-        <div class="form-group">
-            <input type="text" wire:model="title" class="form-control" placeholder="Book Title">
-            <input type="text" wire:model="author" class="form-control" placeholder="Author">
-            <input type="number" wire:model="quantity" class="form-control" placeholder="Quantity">
+        <div class="mb-4">
+            <input type="text" wire:model="title" class="form-control mb-2" placeholder="Book Title">
+            <input type="text" wire:model="author" class="form-control mb-2" placeholder="Author">
+            <input type="number" wire:model="quantity" class="form-control mb-2" placeholder="Quantity">
             @if($book_id)
                 <button wire:click="update" class="btn btn-primary">Update Book</button>
             @else
@@ -19,9 +18,7 @@
             @endif
         </div>
 
-        <hr>
-
-        <table class="table">
+        <table class="table table-striped">
             <thead>
                 <tr>
                     <th>Title</th>
@@ -31,7 +28,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($books as $book)
+                @forelse($books as $book)
                     <tr>
                         <td>{{ $book->title }}</td>
                         <td>{{ $book->author }}</td>
@@ -41,7 +38,11 @@
                             <button wire:click="delete({{ $book->id }})" class="btn btn-danger">Delete</button>
                         </td>
                     </tr>
-                @endforeach
+                @empty
+                    <tr>
+                        <td colspan="4" class="text-center">No books found.</td>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
